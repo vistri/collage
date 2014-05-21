@@ -3,8 +3,6 @@
  */
 package commands
 {
-	import events.SearchEvent;
-
 	import org.robotlegs.mvcs.Command;
 
 	import services.IImagesSearchService;
@@ -15,7 +13,7 @@ package commands
 	public class SearchImagesCommand extends Command
 	{
 		[Inject]
-		public var event:SearchEvent;
+		public var searchTerm:String;
 
 		[Inject]
 		public var service:IImagesSearchService;
@@ -25,7 +23,7 @@ package commands
 		 */
 		override public function execute():void
 		{
-			service.search(event.searchTerm);
+			service.search(searchTerm);
 		}
 	}
 }

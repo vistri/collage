@@ -3,15 +3,15 @@
  */
 package mediators
 {
-	import events.ImageRemoveEvent;
-	import events.ImageSelectedEvent;
-
 	import flash.events.MouseEvent;
 
 	import models.CollageModel;
 
 	import org.robotlegs.core.IMediator;
 	import org.robotlegs.mvcs.Mediator;
+
+	import signals.ImageRemoveSignal;
+	import signals.ImageSelectedSignal;
 
 	import views.ImageView;
 
@@ -27,6 +27,12 @@ package mediators
 		[Inject]
 		public var collageModel:CollageModel;
 
+		[Inject]
+		public var imageSelected:ImageSelectedSignal;
+
+		[Inject]
+		public var imageRemove:ImageRemoveSignal;
+
 		public function ImageMediator()
 		{
 			super();
@@ -37,17 +43,16 @@ package mediators
 		 */
 		override public function onRegister():void
 		{
-			addViewListener(MouseEvent.CLICK, handleMouseClick);
-
-			addContextListener(ImageSelectedEvent.IMAGE_SELECTED, handleSelectedImageChanged)
+			imageSelected.add(handleSelectedImageChanged);
+			image.clicked.add(handleMouseClick);
 		}
 
-		private function handleSelectedImageChanged(event:ImageSelectedEvent):void
+		private function handleSelectedImageChanged():void
 		{
 			//Make sure this is selected image
 			if (image.bitmap == collageModel.selected)
 			{
-				dispatch(new ImageRemoveEvent(ImageRemoveEvent.REMOVE_IMAGE, image));
+				imageRemove.dispatch(image);
 			}
 		}
 

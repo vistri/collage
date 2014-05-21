@@ -8,8 +8,6 @@ package services
 	import com.adobe.webapis.flickr.events.FlickrResultEvent;
 	import com.adobe.webapis.flickr.methodgroups.Photos;
 
-	import events.CollageLoadedEvent;
-
 	import flash.display.Loader;
 	import flash.display.LoaderInfo;
 	import flash.events.Event;
@@ -20,11 +18,16 @@ package services
 
 	import org.robotlegs.mvcs.Actor;
 
+	import signals.CollageLoadedSignal;
+
 	/**
 	 * Service makes images search on Flickr.
 	 */
 	public class FlickrImagesSearchService extends Actor implements IImagesSearchService
 	{
+		[Inject]
+		public var collageLoaded:CollageLoadedSignal;
+
 		private static const FLICKR_API_KEY:String = "516ab798392cb79523691e6dd79005c2";
 
 		private var _service:FlickrService;
@@ -100,7 +103,7 @@ package services
 		{
 			if (_loadRequestHandled == _totalLoadRequests)
 			{
-				dispatch(new CollageLoadedEvent(CollageLoadedEvent.COLLAGE_LOADED, _collage));
+				collageLoaded.dispatch(_collage);
 			}
 			trace("Images loaded: " + _loadRequestHandled + "/" + _totalLoadRequests);
 		}

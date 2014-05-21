@@ -6,9 +6,6 @@ package
 	import commands.SearchImagesCommand;
 	import commands.UpdateCollageCommand;
 
-	import events.CollageLoadedEvent;
-	import events.SearchEvent;
-
 	import flash.display.DisplayObjectContainer;
 
 	import mediators.ApplicationMediator;
@@ -18,10 +15,16 @@ package
 
 	import models.CollageModel;
 
-	import org.robotlegs.mvcs.Context;
+	import org.robotlegs.mvcs.SignalContext;
 
 	import services.FlickrImagesSearchService;
 	import services.IImagesSearchService;
+
+	import signals.CollageLoadedSignal;
+	import signals.CollageUpdatedSignal;
+	import signals.ImageRemoveSignal;
+	import signals.ImageSelectedSignal;
+	import signals.SearchImagesSignal;
 
 	import views.CollageView;
 	import views.ImageView;
@@ -30,7 +33,7 @@ package
 	/**
 	 * Application context which maps command, models services and views.
 	 */
-	public class ApplicationContext extends Context
+	public class ApplicationContext extends SignalContext
 	{
 		public function ApplicationContext(contextView:DisplayObjectContainer = null, autoStartup:Boolean = true)
 		{
@@ -45,9 +48,17 @@ package
 			mapCommands();
 			mapModels();
 			mapServices();
+			mapSignals();
 			mapViews();
 
 			super.startup();
+		}
+
+		private function mapSignals():void
+		{
+			injector.mapSingleton(CollageUpdatedSignal);
+			injector.mapSingleton(ImageSelectedSignal);
+			injector.mapSingleton(ImageRemoveSignal);
 		}
 
 		private function mapModels():void
@@ -62,8 +73,8 @@ package
 
 		private function mapCommands():void
 		{
-			commandMap.mapEvent(SearchEvent.SEARCH, SearchImagesCommand, SearchEvent);
-			commandMap.mapEvent(CollageLoadedEvent.COLLAGE_LOADED, UpdateCollageCommand, CollageLoadedEvent);
+			signalCommandMap.mapSignalClass(SearchImagesSignal, SearchImagesCommand);
+			signalCommandMap.mapSignalClass(CollageLoadedSignal, UpdateCollageCommand);
 		}
 
 		private function mapViews():void

@@ -5,9 +5,6 @@ package mediators
 {
 	import com.greensock.TweenLite;
 
-	import events.CollageUpdatedEvent;
-	import events.ImageRemoveEvent;
-
 	import flash.display.Bitmap;
 
 	import models.CollageModel;
@@ -15,11 +12,14 @@ package mediators
 	import org.robotlegs.core.IMediator;
 	import org.robotlegs.mvcs.Mediator;
 
+	import signals.CollageUpdatedSignal;
+	import signals.ImageRemoveSignal;
+
 	import views.CollageView;
 	import views.ImageView;
 
 	/**
-	 * Mediator for <code>CollageView</code> which listens for image remove and collage update events.
+	 * Mediator for <code>CollageView</code> which listens for image remove and collage update signals.
 	 */
 	public class CollageMediator extends Mediator implements IMediator
 	{
@@ -31,6 +31,12 @@ package mediators
 		[Inject]
 		public var collageModel:CollageModel;
 
+		[Inject]
+		public var collageUpdated:CollageUpdatedSignal;
+
+		[Inject]
+		public var imageRemove:ImageRemoveSignal;
+
 		public function CollageMediator()
 		{
 			super();
@@ -41,15 +47,14 @@ package mediators
 		 */
 		override public function onRegister():void
 		{
-			eventMap.mapListener(eventDispatcher, CollageUpdatedEvent.COLLAGE_UPDATED, handleCollageUpdate);
-
-			addContextListener(ImageRemoveEvent.REMOVE_IMAGE, handleImageRemove);
+			collageUpdated.add(handleCollageUpdate);
+			imageRemove.add(handleImageRemove);
 		}
 
-		private function handleImageRemove(event:ImageRemoveEvent):void
+		private function handleImageRemove(image:ImageView):void
 		{
-			TweenLite.to(event.image, IMAGE_REMOVING_ANIMATION_DURATION, {alpha: 0})
-					.eventCallback("onComplete", removeChild, [event.image]);
+			TweenLite.to(image, IMAGE_REMOVING_ANIMATION_DURATION, {alpha: 0})
+					.eventCallback("onComplete", removeChild, [image]);
 		}
 
 		private function removeChild(image:ImageView):void
@@ -60,7 +65,7 @@ package mediators
 			image.bitmap.bitmapData.dispose();
 		}
 
-		private function handleCollageUpdate(event:CollageUpdatedEvent):void
+		private function handleCollageUpdate():void
 		{
 			for each (var bitmap:Bitmap in collageModel.collage.images)
 			{

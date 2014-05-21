@@ -5,6 +5,9 @@ package views
 {
 	import flash.display.Bitmap;
 	import flash.display.Sprite;
+	import flash.events.MouseEvent;
+
+	import org.osflash.signals.natives.NativeSignal;
 
 	/**
 	 * Class represents one image in collage.
@@ -38,6 +41,14 @@ package views
 		{
 			mouseEnabled = false;
 			buttonMode = false;
+		}
+
+		/**
+		 * Return mouse clicked native signal on image.
+		 */
+		public function get clicked():NativeSignal
+		{
+			return new NativeSignal(this, MouseEvent.CLICK, MouseEvent);
 		}
 	}
 }

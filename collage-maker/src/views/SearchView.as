@@ -4,8 +4,12 @@
 package views
 {
 	import flash.display.Sprite;
+	import flash.events.KeyboardEvent;
+	import flash.events.MouseEvent;
 	import flash.text.TextField;
 	import flash.text.TextFieldType;
+
+	import org.osflash.signals.natives.NativeSignal;
 
 	/**
 	 * Class represents text input field which allows to provide search term for our collage application.
@@ -66,6 +70,22 @@ package views
 		public function remove():void
 		{
 			removeChild(_searchInput);
+		}
+
+		/**
+		 * Return mouse clicked native signal on text input field.
+		 */
+		public function get clicked():NativeSignal
+		{
+			return new NativeSignal(_searchInput, MouseEvent.CLICK, MouseEvent);
+		}
+
+		/**
+		 * Return key down native signal on text input field.
+		 */
+		public function get keyPressed():NativeSignal
+		{
+			return new NativeSignal(_searchInput, KeyboardEvent.KEY_DOWN, KeyboardEvent);
 		}
 	}
 }

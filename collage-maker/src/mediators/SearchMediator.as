@@ -3,15 +3,15 @@
  */
 package mediators
 {
-	import events.CollageUpdatedEvent;
-	import events.SearchEvent;
-
 	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
 	import flash.ui.Keyboard;
 
 	import org.robotlegs.core.IMediator;
 	import org.robotlegs.mvcs.Mediator;
+
+	import signals.CollageUpdatedSignal;
+	import signals.SearchImagesSignal;
 
 	import views.SearchView;
 
@@ -24,6 +24,12 @@ package mediators
 		[Inject]
 		public var search:SearchView;
 
+		[Inject]
+		public var searchImages:SearchImagesSignal;
+
+		[Inject]
+		public var collageUpdated:CollageUpdatedSignal;
+
 		public function SearchMediator()
 		{
 			super();
@@ -34,13 +40,12 @@ package mediators
 		 */
 		override public function onRegister():void
 		{
-			addViewListener(MouseEvent.CLICK, handleMouseClick);
-			addViewListener(KeyboardEvent.KEY_DOWN, handleKeyDown);
-
-			addContextListener(CollageUpdatedEvent.COLLAGE_UPDATED, handleCollageUpdate);
+			collageUpdated.add(handleCollageUpdate);
+			search.clicked.add(handleMouseClick);
+			search.keyPressed.add(handleKeyDown);
 		}
 
-		private function handleCollageUpdate(event:CollageUpdatedEvent):void
+		private function handleCollageUpdate():void
 		{
 			search.remove();
 		}
@@ -49,10 +54,10 @@ package mediators
 		{
 			if (event.keyCode == Keyboard.ENTER && search.text.length != 0)
 			{
-				eventDispatcher.dispatchEvent(new SearchEvent(SearchEvent.SEARCH, search.text));
+				searchImages.dispatch(search.text);
 
-				removeViewListener(MouseEvent.CLICK, handleMouseClick);
-				removeViewListener(KeyboardEvent.KEY_DOWN, handleKeyDown);
+				search.clicked.remove(handleMouseClick);
+				search.keyPressed.remove(handleKeyDown);
 
 				search.showLoadingImagesText();
 			}

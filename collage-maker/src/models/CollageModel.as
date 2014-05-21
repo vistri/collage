@@ -3,20 +3,26 @@
  */
 package models
 {
-	import events.CollageUpdatedEvent;
-	import events.ImageSelectedEvent;
-
 	import flash.display.Bitmap;
 
 	import models.vo.Collage;
 
 	import org.robotlegs.mvcs.Actor;
 
+	import signals.CollageUpdatedSignal;
+	import signals.ImageSelectedSignal;
+
 	/**
 	 * Model which holds data for collage and knows about last selected bitmap.
 	 */
 	public class CollageModel extends Actor
 	{
+		[Inject]
+		public var collageUpdated:CollageUpdatedSignal;
+
+		[Inject]
+		public var imageSelected:ImageSelectedSignal;
+
 		private var _collage:Collage;
 		private var _selected:Bitmap;
 
@@ -27,7 +33,7 @@ package models
 		public function set collage(value:Collage):void
 		{
 			_collage = value;
-			dispatch(new CollageUpdatedEvent(CollageUpdatedEvent.COLLAGE_UPDATED));
+			collageUpdated.dispatch();
 		}
 
 		/**
@@ -53,7 +59,7 @@ package models
 		public function set selected(value:Bitmap):void
 		{
 			_selected = value;
-			dispatch(new ImageSelectedEvent(ImageSelectedEvent.IMAGE_SELECTED, selected));
+			imageSelected.dispatch();
 		}
 	}
 }

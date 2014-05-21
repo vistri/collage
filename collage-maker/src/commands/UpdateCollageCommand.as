@@ -3,9 +3,8 @@
  */
 package commands
 {
-	import events.CollageLoadedEvent;
-
 	import models.CollageModel;
+	import models.vo.Collage;
 
 	import org.robotlegs.mvcs.Command;
 
@@ -15,7 +14,7 @@ package commands
 	public class UpdateCollageCommand extends Command
 	{
 		[Inject]
-		public var event:CollageLoadedEvent;
+		public var collage:Collage;
 
 		[Inject]
 		public var collageModel:CollageModel;
@@ -25,7 +24,7 @@ package commands
 		 */
 		override public function execute():void
 		{
-			collageModel.collage = event.collage;
+			collageModel.collage = collage;
 		}
 	}
 }
